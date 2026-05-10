@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aventura Lectora: K-Pop Edition</title>
+    <style>
+        /* 1. ESTILOS BASE */
+        body {
+            margin: 0; padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: url('fondo-kpop.jpeg') no-repeat center center fixed;
+            background-size: cover;
+            color: white;
+            /* Quitamos overflow: hidden para permitir scroll en celulares */
+            overflow-x: hidden; 
+        }
+
+        .overlay {
+            background: rgba(0, 0, 0, 0.4);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        header {
+            text-align: center;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.6);
+            border-bottom: 2px solid #00f2ff;
+            box-shadow: 0 0 20px rgba(0, 242, 255, 0.5);
+        }
+
+        /* 2. CONTENEDOR RESPONSIVO */
+        .main-container {
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-start; /* Alineado arriba para scroll */
+            flex: 1;
+            padding: 10px;
+            z-index: 1;
+            margin-bottom: 110px; 
+            flex-wrap: wrap; /* Permite que los paneles bajen en pantallas pequeñas */
+            gap: 20px;
+        }
+
+        .panel {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 20px;
+            width: 30%; /* Ancho para PC */
+            min-width: 300px; /* Evita que se encojan de más */
+            height: auto;
+            min-height: 60vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            box-sizing: border-box;
+        }
+
+        /* MEDIA QUERIES PARA CELULARES */
+        @media (max-width: 900px) {
+            .panel { width: 90%; } /* Un panel por fila en móvil */
+            .main-container { margin-bottom: 150px; } /* Más espacio para la barra */
+            .zoey-lateral-derecha { width: 150px; } /* Zoey más pequeña */
+        }
+
+        /* 3. JUEGOS Y NODOS */
+        .nodo-esquema {
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid #00f2ff;
+            border-radius: 15px;
+            padding: 12px;
+            margin-bottom: 12px;
+        }
+
+        summary {
+            cursor: pointer;
+            font-weight: bold;
+            color: #00f2ff;
+            outline: none;
+            list-style: none;
+        }
+
+        #letras-desordenadas {
+            font-family: 'Courier New', Courier, monospace;
+            letter-spacing: 5px;
+            text-align: center;
+            margin: 10px 0;
+            border-bottom: 2px solid #00f2ff;
+            font-size: 1.5rem;
+        }
+
+        .input-cyber {
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid #00f2ff;
+            color: #00f2ff;
+            padding: 10px;
+            width: 90%;
+            text-align: center;
+            text-transform: uppercase;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+        }
+
+        .btn-neon {
+            background: #ff00ff;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-weight: bold;
+            border-radius: 5px;
+            box-shadow: 0 0 10px #ff00ff;
+            transition: 0.3s;
+        }
+
+        .btn-neon:hover { transform: scale(1.05); }
+
+        .ficha-palabra {
+            background: #00f2ff;
+            color: #000;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 3px;
+            display: inline-block;
+        }
+
+        /* 4. KARAOKE ILUMINACIÓN */
+        .palabra-karaoke {
+            display: inline-block;
+            font-size: 1.5rem;
+            color: rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            margin: 4px;
+        }
+
+        .iluminada {
+            color: #00f2ff !important;
+            text-shadow: 0 0 10px #00f2ff;
+            transform: scale(1.1);
+            font-weight: bold;
+        }
+
+        /* 5. ZOEY Y GUERRERA */
+        .zoey-lateral-derecha {
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            width: 180px; 
+            height: auto;
+            z-index: 200;
+            filter: drop-shadow(0 0 8px #00f2ff);
+            pointer-events: none;
+        }
+
+        .guerrera-img { 
+            max-width: 100%; 
+            height: auto; 
+            filter: drop-shadow(0 0 15px #ff00ff); 
+        }
+
+        .icono-lectura { height: 25px; vertical-align: middle; border-radius: 4px; }
+
+        /* 6. BARRA INFERIOR RESPONSIVA */
+        .barra-misiones-inferior {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.9);
+            border-top: 3px solid #00f2ff;
+            position: fixed; /* Fixed para que siempre esté abajo */
+            bottom: 0;
+            width: 100%;
+            z-index: 1000;
+            flex-wrap: wrap; /* Los botones se acomodan si no caben */
+        }
+
+        .btn-circular {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: 2px solid;
+            background: rgba(0,0,0,0.6);
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.6rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: 0.3s;
+            color: white;
+        }
+
+        .btn-juego { border-color: #ff00ff; box-shadow: 0 0 10px rgba(255, 0, 255, 0.3); }
+        .btn-act { border-color: #00f2ff; box-shadow: 0 0 10px rgba(0, 242, 255, 0.3); }
+
+        /* CLASE PARA ANIMACIÓN CANDY CRUSH */
+        .candy-crush-efecto {
+            animation: candy-jump 0.5s ease infinite alternate;
+            text-shadow: 0 0 10px white;
+        }
+
+        @keyframes candy-jump {
+            from { transform: translateY(0); }
+            to { transform: translateY(-10px); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="overlay">
+    <header>
+        <h1>AVENTURA LECTORA: OPERACIÓN K-POP</h1>
+    </header>
+
+    <div class="main-container">
+        <div class="panel" id="panel-inteligencia">
+            <h3 style="margin-top:0; color:#00f2ff;">ZONA DE INTELIGENCIA</h3>
+            <section class="esquema-interactivo">
+                
+                <details class="nodo-esquema" id="detalle-lectura">
+                    <summary>1. Lectura con imágenes</summary>
+                    <div class="contenido">
+                       <p class="lectura-pictograma">Había una vez una niña llamada Luna que vivía en una pequeña casa junto al <img src="bosque.jpeg" class="icono-lectura"> 
+                            Cada mañana, ella escuchaba cantar a un <img src="pajaro.jpej.jpeg" class="icono-lectura"> 
+                            y corría feliz hacia la escuela con su <img src="mochila.jpeg" class="icono-lectura">
+                            Un día, su maestra les habló de un lugar mágico lleno de <img src="cuentos.jpeg" class="icono-lectura"> 
+                            Luna decidió leer un cuento sobre un <img src="dragon.jpeg" class="icono-lectura"> que cuidaba un tesoro brillante como las <img src="estrellas.jpeg" class="icono-lectura">
+                            Viajaba en un <img src="cohete.jpeg" class="icono-lectura"> hacia planetas donde los amigos eran <img src="robots.jpeg" class="icono-lectura">.</p>
+                    </div>
+                </details>
+
+                <details class="nodo-esquema" id="detalle-letras">
+                    <summary>2. Ordenar las letras</summary>
+                    <p id="indicador-level" style="font-size: 0.8rem; color:#ff00ff;">Misión: 1 / 10</p>
+                    <h3 id="letras-desordenadas">L - E - R - E</h3>
+                    <input type="text" id="respuesta-usuario" class="input-cyber" placeholder="ESCRIBE AQUÍ">
+                    <button onclick="procesarRespuesta()" class="btn-neon">DESCIFRAR</button>
+                    <p id="feedback"></p>
+                </details>
+                
+                <details class="nodo-esquema" id="detalle-oraciones">
+                    <summary>3. Ordenar oraciones</summary>
+                    <p id="indicador-oracion" style="font-size: 0.8rem; color:#00f2ff;">Misión: 1 / 7</p>
+                    <div id="caja-palabras" style="min-height:35px; background: rgba(0,0,0,0.2); border-radius: 5px; padding: 5px;"></div>
+                    <div id="zona-respuesta" style="border-bottom:2px dashed #00f2ff; min-height:35px; margin: 10px 0;"></div>
+                    <button onclick="verificarOracion()" class="btn-neon">COMPROBAR</button>
+                    <p id="feedback-oracion"></p>
+                </details>
+            </section>
+            <img src="zoey.png.png" class="zoey-lateral-derecha" id="zoey-main">
+        </div>
+
+        <div class="panel" style="background:transparent; border:none; justify-content:center; align-items:center;">
+            <img src="guerrera.jpeg" alt="Guerrera" class="guerrera-img">
+        </div>
+
+        <div class="panel">
+            <h3 style="color:#ff00ff;">CENTRO DE COMUNICACIÓN</h3>
+            <div id="video-container" style="background:rgba(0,0,0,0.6); flex:1; border:2px solid #ff00ff; border-radius:10px; display: flex; align-items: center; justify-content: center; position: relative; min-height: 200px;">
+                <p id="msg-espera" style="text-align:center; padding:10px;">Inicia el <b>Nivel 1</b> para activar el micrófono 🎤</p>
+                
+                <div id="reproductor-final" style="display:none; text-align: center; padding: 10px;">
+                    <p style="color:#00f2ff;">¡Misión cumplida! Escúchate:</p>
+                    <audio id="audio-grabado-ui" controls style="width: 100%;"></audio>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="barra-misiones-inferior">
+        <button id="btn-nivel1" class="btn-circular btn-juego"><span class="emoji-btn">🎤</span>NIVEL 1</button>
+        <button id="btn-retos" class="btn-circular btn-juego"><span class="emoji-btn">🕹️</span>RETOS</button>
+        <button id="btn-arena" class="btn-circular btn-juego"><span class="emoji-btn">🏆</span>ARENA</button>
+        <div style="width: 2px; height: 40px; background: rgba(255,255,255,0.2);"></div>
+        <button id="btn-repaso" class="btn-circular btn-act"><span class="emoji-btn">📝</span>REPASO</button>
+        <button id="btn-audio" class="btn-circular btn-act"><span class="emoji-btn">🎧</span>AUDIO</button>
+        <button id="btn-final" class="btn-circular btn-act"><span class="emoji-btn">⭐</span>FINAL</button>
+    </div>
+</div>
+
+<script src="script.js"></script>
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
